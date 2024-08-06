@@ -1,0 +1,27 @@
+{
+  "name": "the-sole",
+  "version": "1.0.0",
+  "description": "An ecomerce application api",
+  "main": "server.js",
+  "scripts": {
+    "server": "nodemon server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.4.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.2"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.4"
+  },
+  "keywords": [
+    "node.js",
+    "express"
+  ],
+  "author": "Nischal Bista",
+  "license": "ISC"
+}
