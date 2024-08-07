@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { authenticated } = require("../middlewares/authMiddleware");
 const {
-  getAllUser,
+  getAllUsers,
   userProfile,
   addNewUser,
   updateProfileData,
@@ -10,10 +10,15 @@ const {
   changePassword,
   saveProductToWishlist,
   getUserWishlistProducts,
-} = require("../controllers/usercontrollers");
+  getUserById,
+  deleteUserById,
+  updateUserById,
+} = require("../controllers/userControllers");
 
-router.get("/users", getAllUser);
+router.get("/users", getAllUsers);
 // router.get('/users/:id', authenticated, userscontrollers.getUserById);
+
+router.get("/users/:id", getUserById);
 
 router.get("/users/:id/userProfile", authenticated, userProfile);
 
@@ -33,5 +38,9 @@ router.post(
   authenticated,
   saveProductToWishlist
 );
+
+router.put("/users/:id", updateUserById);
+
+router.delete("/users/:id", deleteUserById);
 
 module.exports = router;

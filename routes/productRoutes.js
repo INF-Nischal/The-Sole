@@ -1,8 +1,20 @@
-// const express = require("express");
-// const router = express.Router();
-// const productcontrollers = require("../controllers/productcontrollers");
+const express = require("express");
+const router = express.Router();
 // const multer = require("multer");
 // const { authenticated, authorizeRoles } = require("../middlewares/auth");
+const {
+  getAllProducts,
+  getProductById,
+  addProduct,
+  updateProductById,
+  deleteProductById,
+  //   getAllCategoryProduct,
+  //   getProductByCategory,
+  //   getProductByPrice,
+  //   uploadImage,
+  //   addReview,
+  //   deleteReview,
+} = require("../controllers/productControllers.js");
 
 // var storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -15,29 +27,21 @@
 
 // const upload = multer({ storage: storage });
 
-// router.get("/products", productcontrollers.getAllProducts);
-// router.get("/products/:id", productcontrollers.getProductById);
-// router.post("/products", authenticated, productcontrollers.addProduct);
-// router.put("/products/:id", upload.any(), productcontrollers.updateProductById);
-// router.delete("/products/:id", productcontrollers.deleteProductById);
+router.get("/products", getAllProducts);
+router.get("/products/:id", getProductById);
+router.post("/products", addProduct);
+router.put("/products/:id", updateProductById);
+router.delete("/products/:id", deleteProductById);
 
-// router.get("/:categoryId", productcontrollers.getAllCategoryProduct);
-// router.post("/product-by-category", productcontrollers.getProductByCategory);
+// router.get("/:categoryId", getAllCategoryProduct);
+// router.post("/product-by-category", getProductByCategory);
 
-// router.get("/products/price", productcontrollers.getProductByPrice);
+// router.get("/products/price", getProductByPrice);
 
 // //Image Upload not specific for which product
-// router.post("/uploadImage", productcontrollers.uploadImage);
+// router.post("/uploadImage", uploadImage);
 
-// router.post(
-//   "/products/:id/reviews",
-//   authenticated,
-//   productcontrollers.addReview
-// );
-// router.delete(
-//   "/products/:id/reviews/:reviewId",
-//   authenticated,
-//   productcontrollers.deleteReview
-// );
+// router.post("/products/:id/reviews", addReview);
+// router.delete("/products/:id/reviews/:reviewId", deleteReview);
 
-// module.exports = router;
+module.exports = router;

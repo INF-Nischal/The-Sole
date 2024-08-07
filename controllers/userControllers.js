@@ -3,13 +3,27 @@ const Product = require("../models/Product.js");
 const bcrypt = require("bcryptjs");
 const cloudinary = require("../middlewares/cloudinaryMiddleware");
 
-const getAllUser = async (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find();
 
     if (users) {
       return res.json({ users });
     }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ user });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -55,7 +69,7 @@ const addNewUser = async (req, res) => {
     const existingUser = await User.findOne({ email: email });
 
     if (!existingUser) {
-      const user = new User(data);
+      const user = new User({ email: email, ...data });
 
       await user.save();
 
@@ -76,7 +90,6 @@ const updateProfileData = async (req, res) => {
 
   if (!user) {
     return res.status(404).json({
-      success: false,
       message: "User not found!",
     });
   }
@@ -241,8 +254,39 @@ const getUserWishlistProducts = async (req, res) => {
   res.end();
 };
 
+const updateUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await User.findByIdAndUpdate(req.params.id, req.body);
+
+    return res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteUserById = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
-  getAllUser,
+  getAllUsers,
+  getUserById,
   userProfile,
   addNewUser,
   updateProfileData,
@@ -250,4 +294,6 @@ module.exports = {
   changePassword,
   saveProductToWishlist,
   getUserWishlistProducts,
+  updateUserById,
+  deleteUserById,
 };

@@ -12,8 +12,8 @@ const { connectDB, disconnectDB } = require("./middlewares/dbMiddleware");
 // Import Router
 const authRouter = require("./routes/adminRoutes");
 const usersRouter = require("./routes/userRoutes");
+const productRouter = require("./routes/productRoutes");
 // const categoryRouter = require("./routes/categoryRoutes");
-// const productRouter = require("./routes/productRoutes");
 // const orderRouter = require("./routes/orderRoutes");
 // const cartRouter = require("./routes/cartRoutes");
 // const customizeRouter = require("./routes/customizeRoutes");
@@ -43,7 +43,7 @@ app.use((req, res, next) => {
 app.use("/api", authRouter);
 app.use("/api", usersRouter);
 // app.use("/api/category", categoryRouter);
-// app.use("/api/product", productRouter);
+app.use("/api", productRouter);
 // app.use("/api/order", orderRouter);
 // app.use("/api/cart", cartRouter);
 // app.use("/api/customize", customizeRouter);

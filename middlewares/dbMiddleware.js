@@ -3,10 +3,7 @@ const mongoose = require("mongoose");
 async function connectDB(req, res, next) {
   if (mongoose.connection.readyState === 0) {
     try {
-      await mongoose.connect(process.env.DB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
+      await mongoose.connect(process.env.DB_URI);
       console.log("Database Connected Successfully");
     } catch (error) {
       return res.status(500).json({ message: "Database connection failed" });

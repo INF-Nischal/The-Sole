@@ -1,7 +1,85 @@
-// const Product = require("../models/Product.js");
-// const cloudinary = require("../middlewares/cloudinaryMiddleware");
+const Product = require("../models/Product.js");
+const cloudinary = require("../middlewares/cloudinaryMiddleware");
 // const fs = require("fs");
-// const path = require("path");
+const path = require("path");
+
+const getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find();
+
+    if (!products) {
+      return res.status(404).json({ error: "No products found" });
+    }
+
+    return res.status(200).json({ products });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    return res.status(200).json({ product });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const addProduct = async (req, res) => {
+  try {
+    const { productName, ...product } = req.body;
+
+    const existingProduct = await Product.findOne({ productName });
+
+    if (!existingProduct) {
+      await Product.create({ productName: productName, ...product });
+
+      return res.status(201).json({ message: "Product added successfully" });
+    }
+
+    return res.status(400).json({ error: "Product already exists" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const updateProductById = async (req, res) => {
+  try {
+    const existingProduct = await Product.findById(req.params.id);
+
+    if (!existingProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    await Product.findByIdAndUpdate(req.params.id, req.body);
+
+    return res.status(200).json({ message: "Product updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteProductById = async (req, res) => {
+  try {
+    const existingProduct = await Product.findById(req.params.id);
+
+    if (!existingProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    await Product.findByIdAndDelete(req.params.id);
+
+    return res.status(200).json({ success: "Product deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 // const deleteImages = (images, mode) => {
 //   const basePath =
@@ -22,23 +100,6 @@
 //   });
 // };
 
-// const getAllProducts = async (req, res) => {
-//   try {
-//     const products = await Product.find()
-//       .populate("productCategory")
-//       .sort({ _id: -1 });
-//     if (products) {
-//       return res.json({
-//         success: true,
-//         message: "Product fetched successfully",
-//         data: products,
-//       });
-//     }
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
 // const getAllCategoryProduct = async (req, res) => {
 //   try {
 //     const products = await Product.find({
@@ -55,161 +116,6 @@
 //     }
 //   } catch (err) {
 //     console.log(err);
-//   }
-// };
-
-// const deleteProductById = async (req, res) => {
-//   const { pId } = req.body;
-//   if (!pId) {
-//     return res.json({ error: "All fields must be required" });
-//   } else {
-//     try {
-//       const deleteProductObj = await Product.findById(pId);
-//       const deleteProduct = await Product.findByIdAndDelete(pId);
-//       if (deleteProduct) {
-//         deleteImages(deleteProductObj.pImages, "string");
-//         return res.json({ success: "Product deleted successfully" });
-//       }
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   }
-// };
-
-// const getProductById = async (req, res) => {
-//   const { pId } = req.body;
-//   if (!pId) {
-//     return res.json({ error: "All fields must be required" });
-//   } else {
-//     try {
-//       const singleProduct = await Product.findById(pId)
-//         .populate("pCategory", "cName")
-//         .populate("pRatingsReviews.user", "name email userImage");
-//       if (singleProduct) {
-//         return res.json({ Product: singleProduct });
-//       }
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   }
-// };
-
-// const addProduct = async (req, res) => {
-//   console.log(req.user._id);
-//   console.log(req.user);
-
-//   const formImage = req.files.images;
-//   const imagePath = formImage.tempFilePath;
-
-//   if (formImage) {
-//     try {
-//       const productImageList = await cloudinary.upload_image(
-//         imagePath,
-//         "products"
-//       );
-//       const {
-//         productName,
-//         productDescription,
-//         productPrice,
-//         productQuantity,
-//         productCategory,
-//         productOffer,
-//         productStatus,
-//       } = req.body;
-
-//       const exist = await Product.findOne({ productName });
-//       if (exist) {
-//         return res.status(400).json({
-//           success: false,
-//           message: "Product name already exists",
-//         });
-//       }
-
-//       const product = await Product.create({
-//         productImageUrlList: [productImageList],
-//         productName,
-//         productDescription,
-//         productPrice,
-//         productQuantity,
-//         productCategory,
-//         productOffer,
-//         productStatus,
-//       });
-//       res.status(200).json({
-//         success: true,
-//         message: "Product created successfully!",
-//         data: product,
-//       });
-//     } catch (error) {
-//       return res.status(500).json({
-//         success: false,
-//         message: error.message,
-//       });
-//     }
-//   } else {
-//     return res.status(500).json({
-//       success: false,
-//       message: "Product image is required",
-//     });
-//   }
-// };
-
-// const updateProductById = async (req, res) => {
-//   const {
-//     pId,
-//     pName,
-//     pDescription,
-//     pPrice,
-//     pQuantity,
-//     pCategory,
-//     pOffer,
-//     pStatus,
-//     pImages,
-//   } = req.body;
-//   const editImages = req.files;
-
-//   if (
-//     !pId ||
-//     !pName ||
-//     !pDescription ||
-//     !pPrice ||
-//     !pQuantity ||
-//     !pCategory ||
-//     !pOffer ||
-//     !pStatus
-//   ) {
-//     return res.json({ error: "All fields must be required" });
-//   } else if (pName.length > 255 || pDescription.length > 3000) {
-//     return res.json({
-//       error:
-//         "Name must not exceed 255 characters & Description must not exceed 3000 characters",
-//     });
-//   } else if (editImages && editImages.length == 1) {
-//     deleteImages(editImages, "file");
-//     return res.json({ error: "Must provide 2 images" });
-//   } else {
-//     let editData = {
-//       pName,
-//       pDescription,
-//       pPrice,
-//       pQuantity,
-//       pCategory,
-//       pOffer,
-//       pStatus,
-//     };
-//     if (editImages.length == 2) {
-//       const allEditImages = editImages.map((img) => img.filename);
-//       editData = { ...editData, pImages: allEditImages };
-//       deleteImages(pImages.split(","), "string");
-//     }
-//     try {
-//       const editProduct = await Product.findByIdAndUpdate(pId, editData);
-//       if (editProduct) {
-//         return res.json({ success: "Product edited successfully" });
-//       }
-//     } catch (err) {
-//       console.log(err);
-//     }
 //   }
 // };
 
@@ -330,18 +236,18 @@
 //   }
 // };
 
-// module.exports = {
-//   deleteImages,
-//   getAllProducts,
-//   getAllCategoryProduct,
-//   deleteProductById,
-//   getProductById,
-//   addProduct,
-//   updateProductById,
-//   getProductByCategory,
-//   getProductByPrice,
-//   getCartProducts,
-//   addReview,
-//   deleteReview,
-//   uploadImage,
-// };
+module.exports = {
+  //   deleteImages,
+  getAllProducts,
+  getProductById,
+  addProduct,
+  updateProductById,
+  deleteProductById,
+  //   getAllCategoryProduct,
+  //   getProductByCategory,
+  //   getProductByPrice,
+  //   getCartProducts,
+  //   addReview,
+  //   deleteReview,
+  //   uploadImage,
+};
