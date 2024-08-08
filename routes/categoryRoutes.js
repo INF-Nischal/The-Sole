@@ -1,15 +1,15 @@
-// const express = require("express");
-// const router = express.Router();
+const express = require("express");
+const router = express.Router();
 // const multer = require("multer");
-// const {
-//   getAllCategory,
-//   getProductCategory,
-//   addNewCategory,
-//   updateCategory,
-//   deleteCategory,
-// } = require("../controllers/categoryControllers");
+const {
+  getCategoryById,
+  addNewCategory,
+  deleteCategoryById,
+  updateCategoryById,
+  getAllCategories,
+} = require("../controllers/categoryControllers");
 
-// // Image Upload setting
+// Image Upload setting
 // var storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
 //     cb(null, "./public/uploads/categories");
@@ -21,12 +21,14 @@
 
 // const upload = multer({ storage: storage });
 
-// router.get("/categories", getAllCategory);
+router.get("/categories", getAllCategories);
 
-// router.post("/categories/addCategory", addNewCategory);
+router.get("/categories/:id", getCategoryById);
 
-// router.put("/categories/:id", updateCategory);
+router.post("/categories", addNewCategory);
 
-// router.delete("/categories/:id", deleteCategory);
+router.put("/categories/:id", updateCategoryById);
 
-// module.exports = router;
+router.delete("/categories/:id", deleteCategoryById);
+
+module.exports = router;

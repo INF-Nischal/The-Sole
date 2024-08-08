@@ -1,30 +1,31 @@
-// const express = require("express");
-// // const authorize = require("../middlewares/auth")
-// const {
-//   authenticated,
-//   authorizeRoles,
-// } = require("../middlewares/authMiddleware");
-// const {
-//   addNewCart,
-//   updateCart,
-//   deleteCart,
-//   getAllCart,
-// } = require("../controllers/cartControllers");
+const express = require("express");
+// const authorize = require("../middlewares/auth")
+const {
+  authenticated,
+  authorizeRoles,
+} = require("../middlewares/authMiddleware");
 
-// // bulk export of routes
-// const router = new express.Router();
+const {
+  getAllCart,
+  getCartById,
+  addNewCart,
+  updateCartById,
+  deleteCartById,
+  getCartByUserId,
+} = require("../controllers/cartControllers");
 
-// // to get all cart
-// router.get("/carts", authenticated, getAllCart); // get method
+const router = new express.Router();
 
-// //to insert cart
-// router.post("/insert/:productId/:quantity", authenticated, addNewCart); // post method
+router.get("/carts", getAllCart);
 
-// // to update cart
-// router.put("carts/:id", updateCart); //put method
+router.get("/carts/:id", getCartById);
 
-// // to delete cart
-// router.delete("/carts/:id", authenticated, deleteCart); //delete method
+router.get("/carts/user/:userId", getCartByUserId);
 
-// //exporting router
-// module.exports = router;
+router.post("/carts", addNewCart);
+
+router.put("/carts/:id", updateCartById);
+
+router.delete("/carts/:id", deleteCartById);
+
+module.exports = router;

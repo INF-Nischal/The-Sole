@@ -1,132 +1,88 @@
 // const cloudinary = require("../middlewares/cloudinaryMiddlware");
-// const Category = require("../models/Category");
+const Category = require("../models/Category");
 // const fs = require("fs");
 
-// const getAllCategory = async (req, res) => {
-//   try {
-//     const categories = await Category.find({}).sort({ _id: -1 });
+const getAllCategories = async (req, res) => {
+  try {
+    const categories = await Category.find();
 
-//     if (categories) {
-//       return res.status(200).json({
-//         data: categories,
-//       });
-//     }
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
+    if (!categories) {
+      return res.status(404).json({ message: "No categories found" });
+    }
 
-// const getProductCategory = async (req, res) => {
-//   try {
-//     let categories = await Category.find({
-//       categoryName: req.body.categoryName,
-//     }).sort({ _id: -1 });
-//     if (categories) {
-//       return res.status(200).json({
-//         success: true,
-//         message: "Category Fetched Successfully",
-//         data: categories,
-//       });
-//     }
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
+    return res.status(200).json({ categories });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
-// const addNewCategory = async (req, res) => {
-//   const formImage = req.files.image;
-//   const imagePath = formImage.tempFilePath;
+const getCategoryById = async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
 
-//   if (formImage) {
-//     try {
-//       const categoryImageURL = await cloudinary.upload_image(
-//         imagePath,
-//         "categories"
-//       );
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
 
-//       const { categoryName, categoryDescription, categoryStatus } = req.body;
+    return res.status(200).json({ category });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
-//       const exist = await Category.findOne({ categoryName });
-//       if (exist) {
-//         return res.status(400).json({
-//           success: false,
-//           message: "Category name already exists",
-//         });
-//       }
+const addNewCategory = async (req, res) => {
+  try {
+    const existingCategory = await Category.findOne({
+      categoryName: req.body.categoryName,
+    });
 
-//       const category = await Category.create({
-//         categoryImageURL: categoryImageURL,
-//         categoryName,
-//         categoryDescription,
-//         categoryStatus,
-//       });
+    if (!existingCategory) {
+      await Category.create(req.body);
 
-//       res.status(200).json({
-//         success: true,
-//         message: "Category created successfully!",
-//         data: category,
-//       });
-//     } catch (error) {
-//       return res.status(500).json({
-//         success: false,
-//         message: error.message,
-//       });
-//     }
-//   } else {
-//     return res.status(500).json({
-//       success: false,
-//       message: "Category Image is required",
-//     });
-//   }
-// };
+      return res.status(201).json({ message: "Category created successfully" });
+    }
 
-// const updateCategory = async (req, res) => {
-//   let { categoryName, categoryDescription, categoryStatus } = req.body;
-//   if (!categoryName || !categoryDescription || !categoryStatus) {
-//     return res.json({ error: "All fields must be required" });
-//   }
-//   try {
-//     let editCategory = Category.findByIdAndUpdate(categoryName, {
-//       categoryDescription,
-//       categoryStatus,
-//     });
-//     let edit = await editCategory.exec();
-//     if (edit) {
-//       return res.json({ success: "Category edited successfully" });
-//     }
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
+    return res.status(409).json({ message: "Category already exists" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
-// const deleteCategory = async (req, res) => {
-//   let { cId } = req.body;
-//   if (!cId) {
-//     return res.json({ error: "All fields must be required" });
-//   } else {
-//     try {
-//       let deletedCategoryFile = await Category.findById(cId);
-//       const filePath = `../server/public/uploads/categories/${deletedCategoryFile.categoryImageURL}`;
+const updateCategoryById = async (req, res) => {
+  try {
+    const existingCategory = await Category.findById(req.params.id);
 
-//       let deleteCategory = await Category.findByIdAndDelete(cId);
-//       if (deleteCategory) {
-//         fs.unlink(filePath, (err) => {
-//           if (err) {
-//             console.log(err);
-//           }
-//           return res.json({ success: "Category deleted successfully" });
-//         });
-//       }
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   }
-// };
+    if (!existingCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
 
-// module.exports = {
-//   getAllCategory,
-//   getProductCategory,
-//   addNewCategory,
-//   updateCategory,
-//   deleteCategory,
-// };
+    await Category.findByIdAndUpdate(req.params.id, req.body);
+
+    return res.status(200).json({ message: "Category updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteCategoryById = async (req, res) => {
+  try {
+    const existingCategory = await Category.findById(req.params.id);
+
+    if (!existingCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    await Category.findByIdAndDelete(req.params.id);
+    return res.status(200).json({ message: "Category deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  getAllCategories,
+  getCategoryById,
+  addNewCategory,
+  updateCategoryById,
+  deleteCategoryById,
+};
