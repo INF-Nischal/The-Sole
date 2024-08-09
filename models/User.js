@@ -67,11 +67,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.methods.getSignedJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
-  });
-};
-
 const User = mongoose.model("User", userSchema);
 module.exports = User;

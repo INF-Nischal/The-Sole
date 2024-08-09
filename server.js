@@ -7,10 +7,10 @@ const cors = require("cors");
 // const fileUpload = require("express-fileupload");
 // const morgan = require("morgan");
 
-const { connectDB, disconnectDB } = require("./middlewares/dbMiddleware");
+const connectDB = require("./config/db");
 
 // Import Router
-const authRouter = require("./routes/adminRoutes");
+const authRouter = require("./routes/authRoutes");
 const usersRouter = require("./routes/userRoutes");
 const productRouter = require("./routes/productRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
@@ -31,9 +31,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // app.use(fileUpload({ useTempFiles: true }));
 
-app.use(connectDB);
-app.use(disconnectDB);
-
 // Routes
 app.use((req, res, next) => {
   console.log(req.path);
@@ -51,6 +48,13 @@ app.use("/api", orderRouter);
 // Run Server
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log("Server is running on", PORT);
-});
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log("Server is running on", PORT);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to the database", err);
+    process.exit(1); // Exit the process with failure
+  });

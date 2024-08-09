@@ -16,16 +16,16 @@ const {
 
 const router = new express.Router();
 
-router.get("/carts", getAllCart);
+router.get("/carts", authenticated, getAllCart);
 
-router.get("/carts/:id", getCartById);
+router.get("/carts/:id", authenticated, getCartById);
 
-router.get("/carts/user/:userId", getCartByUserId);
+router.get("/carts/user/:userId", authenticated, getCartByUserId);
 
-router.post("/carts", addNewCart);
+router.post("/carts", authenticated, addNewCart);
 
-router.put("/carts/:id", updateCartById);
+router.put("/carts/:id", authenticated, updateCartById);
 
-router.delete("/carts/:id", deleteCartById);
+router.delete("/carts/:id", authenticated, deleteCartById);
 
 module.exports = router;

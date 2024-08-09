@@ -5,7 +5,7 @@ const path = require("path");
 
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().populate("productCategory");
 
     if (!products) {
       return res.status(404).json({ error: "No products found" });
@@ -81,6 +81,22 @@ const deleteProductById = async (req, res) => {
   }
 };
 
+const getAllCategoryProduct = async (req, res) => {
+  try {
+    const products = await Product.find({
+      productCategory: req.params.categoryId,
+    }).populate("productCategory");
+
+    if (!products) {
+      return res.status(404).json({ error: "No products found" });
+    }
+
+    return res.status(200).json({ products });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 // const deleteImages = (images, mode) => {
 //   const basePath =
 //     path.resolve(__dirname + "../../") + "/public/uploads/products/";
@@ -98,25 +114,6 @@ const deleteProductById = async (req, res) => {
 //       }
 //     });
 //   });
-// };
-
-// const getAllCategoryProduct = async (req, res) => {
-//   try {
-//     const products = await Product.find({
-//       productCategory: req.params.categoryId,
-//     })
-//       .populate("productCategory")
-//       .sort({ _id: -1 });
-//     if (products) {
-//       return res.json({
-//         success: true,
-//         message: "Product fetched successfully",
-//         data: products,
-//       });
-//     }
-//   } catch (err) {
-//     console.log(err);
-//   }
 // };
 
 // const getProductByCategory = async (req, res) => {
@@ -150,8 +147,8 @@ const deleteProductById = async (req, res) => {
 //       if (products) {
 //         return res.json({ Products: products });
 //       }
-//     } catch (err) {
-//       return res.json({ error: "Filter product wrong" });
+//     } catch (error) {
+//       return res.json({ message: error.message });
 //     }
 //   }
 // };
@@ -243,7 +240,7 @@ module.exports = {
   addProduct,
   updateProductById,
   deleteProductById,
-  //   getAllCategoryProduct,
+  getAllCategoryProduct,
   //   getProductByCategory,
   //   getProductByPrice,
   //   getCartProducts,

@@ -7,8 +7,6 @@ async function connectDB() {
     console.log("Database Connected Successfully");
   } catch (error) {
     return json({ message: error.message });
-  } finally {
-    mongoose.connection.close();
   }
 }
 

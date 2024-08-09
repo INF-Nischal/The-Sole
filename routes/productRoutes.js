@@ -8,13 +8,14 @@ const {
   addProduct,
   updateProductById,
   deleteProductById,
-  //   getAllCategoryProduct,
+  getAllCategoryProduct,
   //   getProductByCategory,
   //   getProductByPrice,
   //   uploadImage,
   //   addReview,
   //   deleteReview,
 } = require("../controllers/productControllers.js");
+const { authenticated } = require("../middlewares/authMiddleware.js");
 
 // var storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -29,11 +30,15 @@ const {
 
 router.get("/products", getAllProducts);
 router.get("/products/:id", getProductById);
-router.post("/products", addProduct);
-router.put("/products/:id", updateProductById);
-router.delete("/products/:id", deleteProductById);
+router.post("/products", authenticated, addProduct);
+router.put("/products/:id", authenticated, updateProductById);
+router.delete("/products/:id", authenticated, deleteProductById);
 
-// router.get("/:categoryId", getAllCategoryProduct);
+router.get(
+  "/products/category/:categoryId",
+  authenticated,
+  getAllCategoryProduct
+);
 // router.post("/product-by-category", getProductByCategory);
 
 // router.get("/products/price", getProductByPrice);

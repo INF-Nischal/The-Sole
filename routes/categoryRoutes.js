@@ -8,6 +8,7 @@ const {
   updateCategoryById,
   getAllCategories,
 } = require("../controllers/categoryControllers");
+const { authenticated } = require("../middlewares/authMiddleware");
 
 // Image Upload setting
 // var storage = multer.diskStorage({
@@ -25,10 +26,10 @@ router.get("/categories", getAllCategories);
 
 router.get("/categories/:id", getCategoryById);
 
-router.post("/categories", addNewCategory);
+router.post("/categories", authenticated, addNewCategory);
 
-router.put("/categories/:id", updateCategoryById);
+router.put("/categories/:id", authenticated, updateCategoryById);
 
-router.delete("/categories/:id", deleteCategoryById);
+router.delete("/categories/:id", authenticated, deleteCategoryById);
 
 module.exports = router;

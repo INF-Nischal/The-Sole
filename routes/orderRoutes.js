@@ -17,12 +17,12 @@ const {
 
 router.get("/orders", getAllOrders);
 router.get("/orders/:id", getOrderById);
-router.get("/orders/user/:userId", getUserOrders);
+router.get("/orders/user/:userId", authenticated, getUserOrders);
 
-router.post("/orders/:userId", addNewOrder);
+router.post("/orders/:userId", authenticated, addNewOrder);
 
-router.put("/orders/:id", updateOrderById);
+router.put("/orders/:id", authenticated, updateOrderById);
 
-router.delete("/orders/:id", deleteOrderById);
+router.delete("/orders/:id", authenticated, deleteOrderById);
 
 module.exports = router;

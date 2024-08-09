@@ -5,7 +5,7 @@ const cloudinary = require("../middlewares/cloudinaryMiddleware");
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().populate("wishlistProduct");
 
     if (users) {
       return res.json({ users });
@@ -24,6 +24,36 @@ const getUserById = async (req, res) => {
     }
 
     return res.status(200).json({ user });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const updateUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await User.findByIdAndUpdate(req.params.id, req.body);
+
+    return res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteUserById = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -59,28 +89,6 @@ const userProfile = async (req, res) => {
       success: false,
       message: error.message,
     });
-  }
-};
-
-const addNewUser = async (req, res) => {
-  const { email, ...data } = req.body;
-
-  try {
-    const existingUser = await User.findOne({ email: email });
-
-    if (!existingUser) {
-      const user = new User({ email: email, ...data });
-
-      await user.save();
-
-      return res.status(201).json({ message: "New user added successfully!" });
-    }
-
-    return res.status(400).json({
-      message: "User already exists",
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -194,91 +202,38 @@ const changePassword = async (req, res) => {
 
 const saveProductToWishlist = async (req, res) => {
   try {
-    const product = await Product.findOne({ _id: req.params.productId });
-    const user = await User.findOne({ _id: req.user._id }).select(
-      "wishlistProduct"
-    );
-    console.log(user.wishlistProduct);
-    if (product) {
-      if (user.wishlistProduct.includes(product._id)) {
-        user.wishlistProduct.pull(product._id);
-        await user.save();
-        res.status(200).json({
-          success: true,
-          message: "Product removed",
-        });
-      } else {
-        user.wishlistProduct.push(product._id);
-        await user.save();
-        res.status(200).json({
-          success: true,
-          message: "Product added",
-        });
-      }
-    } else {
-      res.status(500).json({
-        success: false,
-        message: "Product not found",
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-    });
-  }
-  res.end();
-};
+    const { productId } = req.params;
+    const user = req.user;
 
-const getUserWishlistProducts = async (req, res) => {
-  console.log(req.params);
-  try {
-    const data = await User.findById(req.user._id).populate("wishlistProduct");
-    const favs = await Promise.all(
-      data.wishlistProduct.map((product) => product.populate("productCategory"))
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "User wishlist fetched",
-      data: favs,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-    });
-  }
-  res.end();
-};
-
-const updateUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!user.wishlistProduct) {
+      user.wishlistProduct = [];
     }
 
-    await User.findByIdAndUpdate(req.params.id, req.body);
+    if (user.wishlistProduct.includes(productId)) {
+      return res.status(400).json({ message: "Product already in wishlist" });
+    }
 
-    return res.status(200).json({ message: "User updated successfully" });
+    user.wishlistProduct.push(productId);
+
+    await user.save();
+
+    return res.status(200).json({ message: "Product added to wishlist" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-const deleteUserById = async (req, res) => {
+const getUserWishlistProducts = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const user = await User.findById(req.params.userId).populate(
+      "wishlistProduct"
+    );
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json({ message: "User deleted successfully" });
+    return res.status(200).json({ wishlistProducts: user.wishlistProduct });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -287,13 +242,12 @@ const deleteUserById = async (req, res) => {
 module.exports = {
   getAllUsers,
   getUserById,
+  updateUserById,
+  deleteUserById,
   userProfile,
-  addNewUser,
   updateProfileData,
   updateProfileWithImage,
   changePassword,
   saveProductToWishlist,
   getUserWishlistProducts,
-  updateUserById,
-  deleteUserById,
 };
