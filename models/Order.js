@@ -1,6 +1,18 @@
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
+  orderNumber: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+
+  invoiceNumber: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+
   deliveryStatusMessage: {
     type: String,
     enum: ["Pending", "Completed", "Cancelled"],
@@ -15,19 +27,27 @@ const orderSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
   },
 
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-  },
+  products: [
+    {
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+      orderedQty: {
+        type: Number,
+      },
+      price: {
+        type: Number,
+      },
+    },
+  ],
 
   totalPrice: {
     type: Number,
-  },
-
-  orderedQty: {
-    type: Number,
+    required: true,
   },
 });
 

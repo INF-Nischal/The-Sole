@@ -15,7 +15,7 @@ const usersRouter = require("./routes/userRoutes");
 const productRouter = require("./routes/productRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
 const cartRouter = require("./routes/cartRoutes");
-// const orderRouter = require("./routes/orderRoutes");
+const orderRouter = require("./routes/orderRoutes");
 // const customizeRouter = require("./routes/customizeRoutes");
 
 // Express middlewares
@@ -45,7 +45,7 @@ app.use("/api", usersRouter);
 app.use("/api", categoryRouter);
 app.use("/api", productRouter);
 app.use("/api", cartRouter);
-// app.use("/api/order", orderRouter);
+app.use("/api", orderRouter);
 // app.use("/api/customize", customizeRouter);
 
 // Run Server
