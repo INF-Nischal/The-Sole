@@ -1,11 +1,14 @@
 const Product = require("../models/Product.js");
+
 const cloudinary = require("../middlewares/cloudinaryMiddleware");
 // const fs = require("fs");
 const path = require("path");
 
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate("productCategory");
+    const products = await Product.find()
+      .populate("productCategory")
+      .populate("productImageUrlList");
 
     if (!products) {
       return res.status(404).json({ error: "No products found" });
@@ -19,13 +22,17 @@ const getAllProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id)
+      .populate("productCategory")
+      .populate("productImageUrlList");
 
     if (!product) {
-      return res.status(404).json({ error: "Product not found" });
+      return res
+        .status(404)
+        .json({ error: "Product not found", success: false });
     }
 
-    return res.status(200).json({ product });
+    return res.status(200).json({ product, success: true });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -40,12 +47,16 @@ const addProduct = async (req, res) => {
     if (!existingProduct) {
       await Product.create({ productName: productName, ...product });
 
-      return res.status(201).json({ message: "Product added successfully" });
+      return res
+        .status(201)
+        .json({ message: "Product added successfully", success: true });
     }
 
-    return res.status(400).json({ error: "Product already exists" });
+    return res
+      .status(400)
+      .json({ error: "Product already exists", success: false });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message, success: false });
   }
 };
 
@@ -70,14 +81,18 @@ const deleteProductById = async (req, res) => {
     const existingProduct = await Product.findById(req.params.id);
 
     if (!existingProduct) {
-      return res.status(404).json({ error: "Product not found" });
+      return res
+        .status(404)
+        .json({ message: "Product not found", success: false });
     }
 
     await Product.findByIdAndDelete(req.params.id);
 
-    return res.status(200).json({ success: "Product deleted successfully" });
+    return res
+      .status(200)
+      .json({ message: "Product deleted successfully", success: true });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message, success: false });
   }
 };
 

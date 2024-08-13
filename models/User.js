@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema(
     },
 
     userImage: {
-      type: String,
-      // default: "user.png",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Image",
     },
 
     verified: {

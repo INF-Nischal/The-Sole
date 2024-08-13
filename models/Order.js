@@ -24,6 +24,7 @@ const orderSchema = new mongoose.Schema({
     default: Date.now,
   },
 
+  //Change UserId to User
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

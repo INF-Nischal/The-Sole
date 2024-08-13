@@ -12,7 +12,8 @@ const categorySchema = new mongoose.Schema(
     },
 
     categoryImageURL: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Image",
     },
 
     categoryStatus: {

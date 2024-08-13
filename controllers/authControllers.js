@@ -55,23 +55,28 @@ const loginUser = async (req, res) => {
     const existingUser = await User.findOne({ email: email });
 
     if (!existingUser) {
-      return res.status(400).json({ message: "Invalid Email." });
+      return res
+        .status(400)
+        .json({ message: "Invalid Email.", success: false });
     }
 
     const checkPassword = await bcrypt.compare(password, existingUser.password);
 
     if (!checkPassword) {
-      return res.status(400).json({ message: "Invalid Password." });
+      return res
+        .status(400)
+        .json({ message: "Invalid Password.", success: false });
     }
 
     const token = generateToken(existingUser._id);
 
     return res.status(200).json({
+      success: true,
       message: "Login successful!",
       jwtToken: token,
     });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message, success: false });
   }
 };
 

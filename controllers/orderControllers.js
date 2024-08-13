@@ -3,7 +3,9 @@ const Cart = require("../models/Cart");
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate("products.productId");
+    const orders = await Order.find()
+      .populate("userId")
+      .populate("products.productId");
 
     if (!orders) {
       return res.status(404).json({ message: "No orders found" });
@@ -17,7 +19,9 @@ const getAllOrders = async (req, res) => {
 
 const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id)
+      .populate("products.productId")
+      .populate("userId");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -48,8 +52,6 @@ const addNewOrder = async (req, res) => {
     const cart = await Cart.find({ userId: req.params.userId }).populate(
       "productId"
     );
-
-    console.log(cart);
 
     if (!cart || cart.length === 0) {
       return res.status(404).json({ message: "Cart not found or is empty!" });
@@ -90,7 +92,9 @@ const updateOrderById = async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return res
+        .status(404)
+        .json({ message: "Order not found", success: false });
     }
 
     order.deliveryStatusMessage =
@@ -100,9 +104,13 @@ const updateOrderById = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "Order updated successfully", updatedOrder });
+      .json({
+        message: "Order updated successfully",
+        updatedOrder,
+        success: true,
+      });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message, success: false });
   }
 };
 

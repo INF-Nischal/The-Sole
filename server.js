@@ -16,6 +16,7 @@ const productRouter = require("./routes/productRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
 const cartRouter = require("./routes/cartRoutes");
 const orderRouter = require("./routes/orderRoutes");
+const imageRouter = require("./routes/imageRoutes");
 // const customizeRouter = require("./routes/customizeRoutes");
 
 // Express middlewares
@@ -43,6 +44,7 @@ app.use("/api", categoryRouter);
 app.use("/api", productRouter);
 app.use("/api", cartRouter);
 app.use("/api", orderRouter);
+app.use("/api", imageRouter);
 // app.use("/api/customize", customizeRouter);
 
 // Run Server
@@ -56,5 +58,5 @@ connectDB()
   })
   .catch((err) => {
     console.error("Failed to connect to the database", err);
-    process.exit(1); // Exit the process with failure
+    process.exit(1);
   });

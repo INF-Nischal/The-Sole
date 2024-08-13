@@ -1,4 +1,5 @@
 const express = require("express");
+const router = express.Router();
 // const authorize = require("../middlewares/auth")
 const {
   authenticated,
@@ -13,8 +14,6 @@ const {
   deleteCartById,
   getCartByUserId,
 } = require("../controllers/cartControllers");
-
-const router = new express.Router();
 
 router.get("/carts", authenticated, getAllCart);
 

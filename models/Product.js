@@ -33,7 +33,8 @@ const productSchema = new mongoose.Schema(
     },
 
     productImageUrlList: {
-      type: [String],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Image",
     },
 
     productOffer: {
