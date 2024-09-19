@@ -1,6 +1,4 @@
-// const cloudinary = require("../middlewares/cloudinaryMiddlware");
 const Category = require("../models/Category");
-// const fs = require("fs");
 
 const getAllCategories = async (req, res) => {
   try {

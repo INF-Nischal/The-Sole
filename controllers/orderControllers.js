@@ -5,7 +5,13 @@ const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate("userId")
-      .populate("products.productId");
+      .populate({
+        path: "products.productId",
+        populate: {
+          path: "productImageUrlList",
+          model: "Image",
+        },
+      });
 
     if (!orders) {
       return res.status(404).json({ message: "No orders found" });
@@ -20,8 +26,14 @@ const getAllOrders = async (req, res) => {
 const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
-      .populate("products.productId")
-      .populate("userId");
+      .populate("userId")
+      .populate({
+        path: "products.productId",
+        populate: {
+          path: "productImageUrlList",
+          model: "Image",
+        },
+      });
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -59,12 +71,12 @@ const addNewOrder = async (req, res) => {
 
     const products = cart.map((item) => ({
       productId: item.productId._id,
-      orderderQty: item.quantity,
+      orderedQty: item.quantity,
       price: item.productId.productPrice,
     }));
 
     const totalPrice = products.reduce(
-      (sum, product) => sum + product.price * product.orderderQty,
+      (sum, product) => sum + product.price * product.orderedQty,
       0
     );
 
@@ -102,13 +114,11 @@ const updateOrderById = async (req, res) => {
 
     const updatedOrder = await order.save();
 
-    return res
-      .status(200)
-      .json({
-        message: "Order updated successfully",
-        updatedOrder,
-        success: true,
-      });
+    return res.status(200).json({
+      message: "Order updated successfully",
+      updatedOrder,
+      success: true,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message, success: false });
   }
