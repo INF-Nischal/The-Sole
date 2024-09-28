@@ -1,5 +1,49 @@
 const Product = require("../models/Product.js");
 
+const getProductsByTimeframe = async (req, res) => {
+  try {
+    const queryTime = req.query.time;
+
+    let query = {};
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Start of this week (Sunday)
+
+    const startOfMonth = new Date(today);
+    startOfMonth.setDate(1); // Start of this month (1st day of the month)
+
+    const startOfYear = new Date(today);
+    startOfYear.setMonth(0, 1); // Start of the year (Jan 1st)
+
+    if (queryTime.toLowerCase() === "all") {
+      query = {}; // No date filter, fetch all products
+    } else if (queryTime.toLowerCase() === "today") {
+      query = { createdAt: { $gte: today } }; // Fetch products created today
+    } else if (queryTime.toLowerCase() === "week") {
+      query = { createdAt: { $gte: startOfWeek } }; // Fetch products created this week
+    } else if (queryTime.toLowerCase() === "month") {
+      query = { createdAt: { $gte: startOfMonth } }; // Fetch products created this month
+    } else if (queryTime.toLowerCase() === "year") {
+      query = { createdAt: { $gte: startOfYear } }; // Fetch products created this year
+    } else {
+      return res.status(400).json({ message: "Invalid analytics type" });
+    }
+
+    // Fetch products based on the query
+    const products = await Product.find(query)
+      .populate("productCategory")
+      .populate("productImageUrlList");
+
+    return res.status(200).json({ products });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find()
@@ -109,6 +153,7 @@ const getAllCategoryProduct = async (req, res) => {
 };
 
 module.exports = {
+  getProductsByTimeframe,
   getAllProducts,
   getProductById,
   addProduct,

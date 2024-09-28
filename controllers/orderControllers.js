@@ -1,6 +1,50 @@
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 
+const getOrdersByTimeframe = async (req, res) => {
+  try {
+    const queryTime = req.query.time;
+
+    let query = {};
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Start of this week (Sunday)
+
+    const startOfMonth = new Date(today);
+    startOfMonth.setDate(1); // Start of this month (1st day of the month)
+
+    const startOfYear = new Date(today);
+    startOfYear.setMonth(0, 1); // Start of the year (Jan 1st)
+
+    if (queryTime.toLowerCase() === "all") {
+      query = {}; // No date filter, fetch all orders
+    } else if (queryTime.toLowerCase() === "today") {
+      query = { createdAt: { $gte: today } }; // Fetch orders created today
+    } else if (queryTime.toLowerCase() === "week") {
+      query = { createdAt: { $gte: startOfWeek } }; // Fetch orders created this week
+    } else if (queryTime.toLowerCase() === "month") {
+      query = { createdAt: { $gte: startOfMonth } }; // Fetch orders created this month
+    } else if (queryTime.toLowerCase() === "year") {
+      query = { createdAt: { $gte: startOfYear } }; // Fetch orders created this year
+    } else {
+      return res.status(400).json({ message: "Invalid analytics type" });
+    }
+
+    // Fetch orders based on the query
+    const orders = await Order.find(query);
+
+    const totalSale = orders.reduce((sum, order) => sum + order.totalPrice, 0);
+
+    return res.status(200).json({ orders: orders, totalSale: totalSale });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
@@ -141,6 +185,7 @@ const deleteOrderById = async (req, res) => {
 };
 
 module.exports = {
+  getOrdersByTimeframe,
   getAllOrders,
   getOrderById,
   getUserOrders,

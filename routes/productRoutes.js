@@ -9,6 +9,7 @@ const {
   updateProductById,
   deleteProductById,
   getAllCategoryProduct,
+  getProductsByTimeframe,
   //   getProductByCategory,
   //   getProductByPrice,
   //   uploadImage,
@@ -28,6 +29,7 @@ const { authenticated } = require("../middlewares/authMiddleware.js");
 
 // const upload = multer({ storage: storage });
 
+router.get("/products/analytics", getProductsByTimeframe);
 router.get("/products", getAllProducts);
 router.get("/products/:id", getProductById);
 router.post("/products", authenticated, addProduct);

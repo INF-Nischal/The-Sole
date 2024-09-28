@@ -7,6 +7,7 @@ const {
   deleteCategoryById,
   updateCategoryById,
   getAllCategories,
+  getCategoriesByTimeframe,
 } = require("../controllers/categoryControllers");
 const { authenticated } = require("../middlewares/authMiddleware");
 
@@ -21,6 +22,8 @@ const { authenticated } = require("../middlewares/authMiddleware");
 // });
 
 // const upload = multer({ storage: storage });
+
+router.get("/categories/analytics", getCategoriesByTimeframe);
 
 router.get("/categories", getAllCategories);
 

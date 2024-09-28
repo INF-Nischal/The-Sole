@@ -12,7 +12,10 @@ const {
   getUserById,
   deleteUserById,
   updateUserById,
+  getUsersByTimeframe,
 } = require("../controllers/userControllers");
+
+router.get("/users/analytics", getUsersByTimeframe);
 
 router.get("/users", getAllUsers);
 router.get("/users/:id", authenticated, getUserById);
